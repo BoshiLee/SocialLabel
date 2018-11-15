@@ -26,7 +26,9 @@ struct RegexParser {
         guard let regex = regularExpression(forSocialType: type) else { return [] }
         let results = regex.matches(in: text, range: NSRange(text.startIndex..., in: text))
         return results.map {
-            SocialElement(type: type, range: text.nsRange(from: Range($0.range, in: text)!))
+            let nsRange = text.nsRange(from: Range($0.range, in: text)!)
+            let subString = text.subString(with: nsRange)
+            return SocialElement(type: type, content: subString, range: nsRange)
         }
     }
     
@@ -71,7 +73,7 @@ struct RegexParser {
         // 取得 nickNameTag 的 NSRange
         let nickNameRange = NSRange(location: fristMention.location, length: nickNameMention.characterLength)
         text = originText
-        return SocialElement(type: .mention, range: nickNameRange)
+        return SocialElement(type: .mention, content: id, range: nickNameRange)
     }
     
     private static func regularExpression(forSocialType type: SocialType) -> NSRegularExpression? {

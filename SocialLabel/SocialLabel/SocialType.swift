@@ -24,6 +24,7 @@ public enum SocialType {
 
 struct SocialElement {
     let type: SocialType
+    let content: String
     let range: NSRange
 }
 /// key = id, value: nickName

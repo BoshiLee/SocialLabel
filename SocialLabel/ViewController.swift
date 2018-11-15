@@ -28,7 +28,7 @@ class ViewController: UIViewController {
     func setupLable() {
         var mentionDict: MentionDict = MentionDict()
         mentionDict["Vvvv"] = "👨‍👨‍👧‍👧Ray🤬 🤬🤬🤬C👨‍👨‍👧‍👧👨‍👨‍👧‍👧🧖🏿‍♂️h"
-        mentionDict["aav"] = "Lee🥵 B🥵o🥵🥵 s👨‍👨‍👧‍👧h👼🏿i"
+        mentionDict["aav"] = "Lee🥵 B🥵o🥵.🥵 s👨‍👨‍👧‍👧h👼🏿i"
         self.socialLabel.mentionDict = mentionDict
         self.socialLabel.text = testString
         let activeFont = UIFont.boldSystemFont(ofSize: 13.0)
@@ -39,7 +39,10 @@ class ViewController: UIViewController {
         self.socialLabel.URLFont = activeFont
         self.socialLabel.mentionColor = .tagBlue
         self.socialLabel.mentionFont = activeFont
-        self.socialLabel.becomeSocialized()
+        
+        self.socialLabel.handleURLTap { print($0) }
+        self.socialLabel.handleHashtagTap { print($0) }
+        self.socialLabel.handleMentionTap { print($0)}
     }
     
 
