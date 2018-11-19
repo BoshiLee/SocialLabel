@@ -44,11 +44,12 @@ extension String {
         var length = 0
         for char in self {
             // 判断是否中文，是中文+2 ，不是+1
-            if String(char).containsEmoji {
-                length += (String(char) as NSString).length
-            } else {
-                length += "\(char)".lengthOfBytes(using: .utf8) == 3 ? 2 : 1
-            }
+//            if String(char).containsEmoji {
+//                length += (String(char) as NSString).length
+//            } else {
+//                length += "\(char)".lengthOfBytes(using: .utf8) == 3 ? 2 : 1
+//            }
+            length += (String(char) as NSString).length
         }
         return length
     }

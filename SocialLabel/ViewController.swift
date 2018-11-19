@@ -10,7 +10,13 @@ import UIKit
 
 class ViewController: UIViewController {
 
-    var testString: String = "你好啊啊啊http://www.bump.app 啊啊啊啊啊ㄚ ㄘ<tagUser>@Vvvv</tagUser>AA🌡B啊啊啊 🃂◉♼ #AAAAAA<tagUser>@aav</tagUser> 發發發55💃🏾5 #123 "
+    var testString: String =
+    """
+活動畢業
+拿到聖杯立刻餵給術閃～
+
+我迦術閃lv90 了☺️
+"""
     
     @IBOutlet weak var originLabel: UILabel! {
         didSet {
@@ -26,12 +32,13 @@ class ViewController: UIViewController {
     }
     
     func setupLable() {
-        var mentionDict: MentionDict = MentionDict()
-        mentionDict["Vvvv"] = "👨‍👨‍👧‍👧Ray🤬 🤬🤬🤬C👨‍👨‍👧‍👧👨‍👨‍👧‍👧🧖🏿‍♂️h"
-        mentionDict["aav"] = "Lee🥵 B🥵o🥵.🥵 s👨‍👨‍👧‍👧h👼🏿i"
-        self.socialLabel.mentionDict = mentionDict
-        self.socialLabel.text = testString
-        let activeFont = UIFont.boldSystemFont(ofSize: 13.0)
+        
+        let gamplexDev: MentionUser = MentionUser(account: "gamplexDev", nickName: "Gamplex小編👩‍👩‍👦ggg", shouldActiveInt: 1)
+
+        let mentions = [gamplexDev]
+        
+        self.socialLabel.setContent(self.testString, mentions: mentions)
+        let activeFont = UIFont.boldSystemFont(ofSize: 14.0)
         self.socialLabel.hashtagColor = .tagBlue
         self.socialLabel.hashtagFont = activeFont
         self.socialLabel.URLColor = .textBlack

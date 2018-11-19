@@ -8,7 +8,7 @@
 
 import UIKit
 
-public protocol ActiveLabelDelegate: class {
+public protocol SocialLabelDelegate: class {
     func didSelect(_ text: String, type: SocialType)
 }
 
@@ -47,51 +47,51 @@ class SocialLabel: UILabel {
     @IBInspectable open var mentionFont: UIFont?  {
         didSet { updateTextStorage(parseText: false) }
     }
-
+    
     @IBInspectable open var mentionColor: UIColor = .blue  {
         didSet { updateTextStorage(parseText: false) }
     }
-
+    
     @IBInspectable open var mentionSelectedColor: UIColor?  {
         didSet { updateTextStorage(parseText: false) }
     }
-
+    
     @IBInspectable open var mentionUnderLineStyle: NSUnderlineStyle = []  {
         didSet { updateTextStorage(parseText: false) }
     }
-
+    
     @IBInspectable open var hashtagFont: UIFont?  {
         didSet { updateTextStorage(parseText: false) }
     }
-
+    
     @IBInspectable open var hashtagColor: UIColor = .blue  {
         didSet { updateTextStorage(parseText: false) }
     }
-
+    
     @IBInspectable open var hashtagSelectedColor: UIColor?  {
         didSet { updateTextStorage(parseText: false) }
     }
-
-    @IBInspectable open var hashtagUnderLineStyle: NSUnderlineStyle = []  {
+    
+    @IBInspectable open var hashtagUnderLineStyle: NSUnderlineStyle = [] {
         didSet { updateTextStorage(parseText: false) }
     }
-
+    
     @IBInspectable open var URLColor: UIColor = .blue  {
         didSet { updateTextStorage(parseText: false) }
     }
-
+    
     @IBInspectable open var URLSelectedColor: UIColor?  {
         didSet { updateTextStorage(parseText: false) }
     }
-
+    
     @IBInspectable open var URLFont: UIFont?  {
         didSet { updateTextStorage(parseText: false) }
     }
-
-    @IBInspectable open var URLUnderLineStyle: NSUnderlineStyle = []  {
+    
+    @IBInspectable open var URLUnderLineStyle: NSUnderlineStyle = [] {
         didSet { updateTextStorage(parseText: false) }
     }
-
+    
     @IBInspectable public var minimumLineHeight: CGFloat = 0 {
         didSet { updateTextStorage(parseText: false) }
     }
@@ -102,7 +102,8 @@ class SocialLabel: UILabel {
     
     // MARK: - Private Properties don't open it
     private lazy var cachedSocialElements: [SocialElement] = [SocialElement]()
-    var selectedElement: SocialElement?
+    private lazy var mentionDict: MentionDict = MentionDict()
+    private var selectedElement: SocialElement?
     
     fileprivate var _customizing: Bool = true
     internal lazy var textStorage = NSTextStorage()
@@ -115,14 +116,20 @@ class SocialLabel: UILabel {
     internal var urlTapHandler: ((URL) -> ())?
     
     // MARK: - public properties
-    open var mentionDict: MentionDict = MentionDict() {
-        didSet { updateTextStorage() }
-    }
+    
     open var enableType: [SocialType] = [.mention, .hashtag, .url]
     
-    open weak var delegate: ActiveLabelDelegate?
+    open weak var delegate: SocialLabelDelegate?
     
     // MARK: - public methods
+    open func setContent(_ text: String?, mentions: [MentionUser]) {
+        self.mentionDict.removeAll()
+        for mention in mentions {
+            mentionDict[mention.account] = mention
+        }
+        self.text = text
+    }
+    
     open func handleMentionTap(_ handler: @escaping (String) -> ()) {
         mentionTapHandler = handler
     }
@@ -150,6 +157,7 @@ class SocialLabel: UILabel {
     
     open override func awakeFromNib() {
         super.awakeFromNib()
+        updateTextStorage()
     }
     
     fileprivate func updateTextStorage(parseText: Bool = true) {
@@ -170,16 +178,16 @@ class SocialLabel: UILabel {
             mutAttrString.mutableString.setString(newString)
         }
         
-        textStorage.setAttributedString(mutAttrString)
+        self.addLinkAttribute(mutAttrString, with: self.cachedSocialElements)
+        self.textStorage.setAttributedString(mutAttrString)
         _customizing = true
-        self.setAttrbuite(formText: mutAttrString.mutableString as String, with: self.cachedSocialElements)
         text = mutAttrString.string
         _customizing = false
         setNeedsDisplay()
     }
     
     fileprivate func clearActiveElements() {
-        selectedElement = nil
+        self.selectedElement = nil
         self.cachedSocialElements.removeAll()
         
     }
@@ -188,9 +196,9 @@ class SocialLabel: UILabel {
     fileprivate func parseTextAndExtractActiveElements(_ attrString: NSAttributedString) -> String {
         var textString = attrString.string
         var elements: [SocialElement] = []
-        elements.append(contentsOf: RegexParser.relpaceMentions(form: &textString, with: self.mentionDict))
-        elements.append(contentsOf: RegexParser.matches(from: textString, withSocialType: .hashtag))
-        elements.append(contentsOf: RegexParser.matches(from: textString, withSocialType: .url))
+        elements.append(contentsOf: ElementBuilder.relpaceMentions(form: &textString, with: self.mentionDict))
+        elements.append(contentsOf: ElementBuilder.matches(from: textString, withSocialType: .hashtag))
+        elements.append(contentsOf: ElementBuilder.matches(from: textString, withSocialType: .url))
         self.cachedSocialElements = elements
         return textString
     }
@@ -213,37 +221,48 @@ class SocialLabel: UILabel {
         return mutAttrString
     }
     
-    /**
-     Use this func to active social elements in labe
-     - Parameter mentionDict: Pass this parameter for create custom mention id, NickName
-     - format = [id: nickName]
-     */
-    open func becomeSocialized(withMentionDict mentionDict: MentionDict = MentionDict()) {
-        self.mentionDict = mentionDict
-    }
-    
     private func setupLabel() {
         
-        // setup tap handle properties
-        textStorage.addLayoutManager(layoutManager)
-        layoutManager.addTextContainer(textContainer)
-        textContainer.lineFragmentPadding = 0
-        textContainer.lineBreakMode = lineBreakMode
-        textContainer.maximumNumberOfLines = numberOfLines
         isUserInteractionEnabled = true
         
         // Configure textContainer
         textContainer.lineFragmentPadding = 0.0
+        layoutManager.addTextContainer(textContainer)
+        textStorage.addLayoutManager(layoutManager)
+        textContainer.lineFragmentPadding = 0
+        textContainer.lineBreakMode = lineBreakMode
+        textContainer.maximumNumberOfLines = numberOfLines
+        
+        self.setupCopyable()
         
     }
     
     
-    private func setAttrbuite(formText text: String, with elements: [SocialElement]) {
-        let mutableString = NSMutableAttributedString(string: text)
-        elements.forEach {
-            mutableString.setAttributes(self.createAttributes(with: $0.type), range: $0.range)
+    private func addLinkAttribute(_ mutAttrString: NSMutableAttributedString, with elements: [SocialElement]) {
+        var range = NSRange(location: 0, length: 0)
+        var attributes = mutAttrString.attributes(at: 0, effectiveRange: &range)
+        // 保持原本在 storyboard 的顏色字體設定
+        
+        attributes[.font] = font!
+        attributes[.foregroundColor] = textColor
+        mutAttrString.addAttributes(attributes, range: range)
+        
+        // 針對各個元素的顏色字體設定
+        for element in elements {
+            switch element.type {
+            case .mention:
+                let id = element.content
+                if let user = self.mentionDict[id], user.shouldActive {
+                    mutAttrString.setAttributes(
+                        self.createAttributes(with: element.type),
+                        range: element.range)
+                }
+            case .hashtag, .url:
+                mutAttrString.setAttributes(
+                    self.createAttributes(with: element.type),
+                    range: element.range)
+            }
         }
-        self.attributedText = mutableString
     }
     
     private func createAttributes(with socialType: SocialType) -> [NSAttributedString.Key : Any] {
@@ -269,34 +288,6 @@ class SocialLabel: UILabel {
     }
     
     
-}
-
-extension SocialLabel {
-    
-    open override var intrinsicContentSize: CGSize {
-        let superSize = super.intrinsicContentSize
-        textContainer.size = CGSize(width: superSize.width, height: CGFloat.greatestFiniteMagnitude)
-        let size = layoutManager.usedRect(for: textContainer)
-        return CGSize(width: ceil(size.width), height: ceil(size.height))
-    }
-
-    open override func drawText(in rect: CGRect) {
-        let range = NSRange(location: 0, length: textStorage.length)
-
-        textContainer.size = rect.size
-        let newOrigin = textOrigin(inRect: rect)
-
-        layoutManager.drawBackground(forGlyphRange: range, at: newOrigin)
-        layoutManager.drawGlyphs(forGlyphRange: range, at: newOrigin)
-    }
-
-    private func textOrigin(inRect rect: CGRect) -> CGPoint {
-        let usedRect = layoutManager.usedRect(for: textContainer)
-        heightCorrection = (rect.height - usedRect.height)/2
-        let glyphOriginY = heightCorrection > 0 ? rect.origin.y + heightCorrection : rect.origin.y
-        return CGPoint(x: rect.origin.x, y: glyphOriginY)
-    }
-
 }
 
 extension SocialLabel {
@@ -342,7 +333,11 @@ extension SocialLabel {
             guard let selectedElement = selectedElement else { return avoidSuperCall }
             
             switch selectedElement.type {
-            case .mention: self.didTapMention(selectedElement.content)
+            case .mention:
+                let id = selectedElement.content
+                if let user = self.mentionDict[id], user.shouldActive {
+                    self.didTapMention(selectedElement.content)
+                }
             case .hashtag: self.didTapHashtag(selectedElement.content)
             case .url: self.didTapStringURL(selectedElement.content)
             }
@@ -396,7 +391,7 @@ extension SocialLabel {
             urlTapHandler = nil
         }
     }
-
+    
 }
 //MARK: - Handle UI Responder touches
 extension SocialLabel {
@@ -424,7 +419,7 @@ extension SocialLabel {
         if onTouch(touch) { return }
         super.touchesEnded(touches, with: event)
     }
-
+    
 }
 
 extension SocialLabel: UIGestureRecognizerDelegate {
@@ -440,4 +435,23 @@ extension SocialLabel: UIGestureRecognizerDelegate {
     public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldBeRequiredToFailBy otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         return true
     }
+}
+
+extension SocialLabel {
+    
+    open override func drawText(in rect: CGRect) {
+        let range = NSRange(location: 0, length: textStorage.length)
+        textContainer.size = rect.size
+        let newOrigin = textOrigin(inRect: rect)
+        layoutManager.drawBackground(forGlyphRange: range, at: newOrigin)
+        layoutManager.drawGlyphs(forGlyphRange: range, at: newOrigin)
+    }
+    
+    private func textOrigin(inRect rect: CGRect) -> CGPoint {
+        let usedRect = layoutManager.usedRect(for: textContainer)
+        heightCorrection = (rect.height - usedRect.height)/2
+        //        let glyphOriginY = heightCorrection > 0 ? rect.origin.y + heightCorrection : rect.origin.y
+        return CGPoint(x: rect.origin.x, y: rect.origin.y)
+    }
+    
 }

@@ -14,6 +14,7 @@
 		9F778B2E219BBF1E008C32A2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9F778B2D219BBF1E008C32A2 /* Assets.xcassets */; };
 		9F778B31219BBF1E008C32A2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9F778B2F219BBF1E008C32A2 /* LaunchScreen.storyboard */; };
 		9F937770219C967F00D8A814 /* StringEmojiHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F93776F219C967F00D8A814 /* StringEmojiHelper.swift */; };
+		9FA7FBA3219D5D22008C4F27 /* ElementBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA7FBA2219D5D22008C4F27 /* ElementBuilder.swift */; };
 		9FB66255219BCCE500EA13A5 /* TextCopyable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FB66254219BCCE500EA13A5 /* TextCopyable.swift */; };
 		9FB66257219BCE8F00EA13A5 /* RegexParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FB66256219BCE8F00EA13A5 /* RegexParser.swift */; };
 		9FB66259219BCFAE00EA13A5 /* SocialType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FB66258219BCFAE00EA13A5 /* SocialType.swift */; };
@@ -32,6 +33,7 @@
 		9F778B30219BBF1E008C32A2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		9F778B32219BBF1E008C32A2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9F93776F219C967F00D8A814 /* StringEmojiHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringEmojiHelper.swift; sourceTree = "<group>"; };
+		9FA7FBA2219D5D22008C4F27 /* ElementBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElementBuilder.swift; sourceTree = "<group>"; };
 		9FB66254219BCCE500EA13A5 /* TextCopyable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextCopyable.swift; sourceTree = "<group>"; };
 		9FB66256219BCE8F00EA13A5 /* RegexParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegexParser.swift; sourceTree = "<group>"; };
 		9FB66258219BCFAE00EA13A5 /* SocialType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialType.swift; sourceTree = "<group>"; };
@@ -89,6 +91,7 @@
 				9FB66258219BCFAE00EA13A5 /* SocialType.swift */,
 				9FB66254219BCCE500EA13A5 /* TextCopyable.swift */,
 				9FB66256219BCE8F00EA13A5 /* RegexParser.swift */,
+				9FA7FBA2219D5D22008C4F27 /* ElementBuilder.swift */,
 				9FB6625A219BF57E00EA13A5 /* SocialRegex.swift */,
 				9FB6625C219C132100EA13A5 /* NSRangeHelper.swift */,
 				9F93776F219C967F00D8A814 /* StringEmojiHelper.swift */,
@@ -174,6 +177,7 @@
 				9F49B4AB219BC2D500A71691 /* SocialLabel.swift in Sources */,
 				9FB6625D219C132100EA13A5 /* NSRangeHelper.swift in Sources */,
 				9FB6625B219BF57E00EA13A5 /* SocialRegex.swift in Sources */,
+				9FA7FBA3219D5D22008C4F27 /* ElementBuilder.swift in Sources */,
 				9FB66259219BCFAE00EA13A5 /* SocialType.swift in Sources */,
 				9F778B27219BBF1D008C32A2 /* AppDelegate.swift in Sources */,
 				9FB6625F219C201E00EA13A5 /* SocialColor.swift in Sources */,
